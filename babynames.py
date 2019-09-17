@@ -14,6 +14,7 @@ import sys
 import re
 import argparse
 
+
 """
 Define the extract_names() function below and change main()
 to call it.
@@ -44,10 +45,36 @@ def extract_names(filename):
     Given a file name for baby.html, returns a list starting with the year string
     followed by the name-rank strings in alphabetical order.
     ['2006', 'Aaliyah 91', Aaron 57', 'Abagail 895', ' ...]
-    """
-    # +++your code here+++
-    return
 
+    todo list:
+    1 take in the list of filesnames
+    2 go through the list and read each html file
+    3 using regex build an expression to obtain the data we want
+    4 put the data into a list and then return the list 
+
+    """
+    final_list = []
+
+    for file in filename:
+        open_file = open(file)
+        for l in open_file:
+            year = re.search(r'Popularity\sin\s(\d\d\d\d)', l)
+            if year:
+                final_list.append(year.string[-10:-6])
+            match = re.search('<tr', l)
+            if match:
+                row = match.string
+                name = re.split('<td>(\d+)</td><td>(\w+)</td><td>(\w+)</td>', row)
+                if len(name) > 1:
+                    name_rank = name[2] + ' ' + name[1]
+                    final_list.append(name_rank)
+                    
+
+    return final_list
+                
+
+
+    
 
 def create_parser():
     """Create a cmd line parser object with 2 argument definitions"""
@@ -76,6 +103,14 @@ def main():
     # +++your code here+++
     # For each filename, get the names, then either print the text output
     # or write it to a summary file
+    results = extract_names(file_list)
+    text = '\n'.join(results) + '\n'
+
+    if create_summary:
+        f = open("foo.html.summary", "w+")
+        f.write(text)
+        f.close
+
 
 
 if __name__ == '__main__':
