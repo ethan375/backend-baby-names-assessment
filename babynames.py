@@ -11,43 +11,57 @@
 # http://code.google.com/edu/languages/google-python-class/
 
 import sys
+import os.path
 import re
 import argparse
 
-"""
-Define the extract_names() function below and change main()
-to call it.
+__author__="ethan375"
 
-For writing regex, it's nice to include a copy of the target
-text for inspiration.
 
-Here's what the html looks like in the baby.html files:
-...
-<h3 align="center">Popularity in 1990</h3>
-....
-<tr align="right"><td>1</td><td>Michael</td><td>Jessica</td>
-<tr align="right"><td>2</td><td>Christopher</td><td>Ashley</td>
-<tr align="right"><td>3</td><td>Matthew</td><td>Brittany</td>
-...
 
-Suggested milestones for incremental development:
- -Extract the year and print it
- -Extract the names and rank numbers and just print them
- -Get the names data into a dict and print it
- -Build the [year, 'name rank', ... ] list and print it
- -Fix main() to use the extract_names list
-"""
 
 
 def extract_names(filename):
-    """
-    Given a file name for baby.html, returns a list starting with the year string
-    followed by the name-rank strings in alphabetical order.
-    ['2006', 'Aaliyah 91', Aaron 57', 'Abagail 895', ' ...]
-    """
-    # +++your code here+++
-    return
+    """alphabatizes and removes duplicates for baby names"""
 
+    
+# main function should pass one file and extract function should sort one file
+# Sort the names in the file needs to be sorted alpha, both b/g 
+# set does not allow duplicate entries as well dicts 
+# 
+
+    final_list = []
+    name_rank = {}
+
+    with open(filename) as open_file:
+        for l in open_file:
+            year_match_obj = re.search(r'Popularity\sin\s(\d\d\d\d)', l)
+            if year_match_obj:
+                # final_list.append(year.string[-10:-6])
+                year = year_match_obj.group(1)
+                final_list.append(year)
+            match = re.search('<tr', l)
+            if match:
+                row = match.string
+                match_obj = re.findall('<td>(\d+)</td><td>(\w+)</td><td>(\w+)</td>', row)
+                if match_obj:
+                    rank, boy, girl = match_obj[0]
+                    pass
+                    name_rank[boy] = rank
+                    name_rank[girl] = rank
+    
+
+
+    for val in name_rank:
+        final_list.append(val + ' ' + name_rank[val])
+    final_list = sorted(final_list)
+
+    return final_list
+                    
+                
+
+
+    
 
 def create_parser():
     """Create a cmd line parser object with 2 argument definitions"""
@@ -73,9 +87,18 @@ def main():
     # option flag
     create_summary = args.summaryfile
 
-    # +++your code here+++
-    # For each filename, get the names, then either print the text output
-    # or write it to a summary file
+   
+    for file in file_list:
+         results = '\n'.join(extract_names(file)) + '\n'
+         print(results)
+         if create_summary:
+             with open(file + '.summary', "w") as new_file:
+                 new_file.write(results) 
+            #  append_summary(pretty_results)
+
+    
+
+
 
 
 if __name__ == '__main__':
